@@ -14,7 +14,7 @@ Este repositorio contiene el código, los datos y los experimentos del artículo
 
 El proyecto establece y valida empíricamente el límite teórico mínimo para la reparación de redes neuronales: el número de conexiones requeridas para restaurar la integridad estructural es exactamente igual al número de componentes fragmentados.
 
-![Statistical Analysis](figures7figure_robustness_analysis.png)
+![Statistical Analysis](figures/figure_robustness_analysis.png)
 *Análisis estadístico de las estrategias de reparación en 100 réplicas independientes bajo poda P95, demostrando la consistencia perfecta y la superioridad de la Fusión de Componentes.*
 
 ---
