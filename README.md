@@ -1,6 +1,12 @@
 # Optimal Neural Network Repair: Achieving Theoretical Limits in Fragment Recovery via Component Fusion
 
-[![ORCID](https://img.shields.io/badge/ORCID-0009--0008--1822--3452-A6CE39.svg?logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1822-3452) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![DOI](https://img.shields.io/badge/DOI-PENDING-lightgrey.svg)]() [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17176412.svg)](https://doi.org/10.5281/zenodo.17176412)
+[![Autor](https://img.shields.io/badge/Autor-Jos%C3%A9%20Ignacio%20Peinador%20Sala-lightgrey.svg)](https://orcid.org/0009-0008-1822-3452)
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0008--1822--3452-A6CE39.svg?logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1822-3452)
+[![Contacto](https://img.shields.io/badge/Contacto-joseignacio.peinador@gmail.com-007BFF.svg)](mailto:joseignacio.peinador@gmail.com)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![DOI](https://img.shields.io/badge/DOI-10.21203/rs.3.rs--7808963-blue.svg)](https://dx.doi.org/10.21203/rs.3.rs-7808963/v1)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17176412.svg)](https://doi.org/10.5281/zenodo.17176412)
 
 This repository contains the code, data, and experiments for the research paper "Optimal Neural Network Repair: Achieving Theoretical Limits in Fragment Recovery via Component Fusion".
 
