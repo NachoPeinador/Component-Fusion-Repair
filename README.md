@@ -1,4 +1,4 @@
-# Optimal Neural Network Repair: Achieving Theoretical Limits in Fragment Recovery via Component Fusion
+# Reparación Óptima de Redes Neuronales: Alcanzando los Límites Teóricos en la Recuperación de Fragmentos mediante la Fusión de Componentes
 
 [![Read in English](https://img.shields.io/badge/Read%20in-English%20%F0%9F%87%AC%F0%9F%87%A7-007BFF.svg)](README_EN.md)
 [![ORCID](https://img.shields.io/badge/ORCID-0009--0008--1822--3452-A6CE39.svg?logo=orcid&logoColor=white)](https://orcid.org/0009-0008-1822-3452) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![DOI](https://img.shields.io/badge/DOI-PENDIENTE-lightgrey.svg)]() [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1234567.svg)](https://doi.org/10.5281/zenodo.1234567)
