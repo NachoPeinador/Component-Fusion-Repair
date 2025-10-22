@@ -22,6 +22,7 @@ Este repositorio está diseñado para la ciencia abierta y la reproducibilidad t
 
 **Pipeline de Validación Completo**
 Ejecuta el experimento a gran escala y el test de robustez de 100 réplicas para validar los hallazgos del artículo.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1A0iFu8xn0QZilWM4e1z6e30REQCP8ICO#scrollTo=sBrGZl2PVS5d)
 
 ## 📂 Estructura del Repositorio
 * `Component_Fusion_Experiment.ipynb`: El cuaderno de Colab interactivo con todos los experimentos.
