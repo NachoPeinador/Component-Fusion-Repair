@@ -54,9 +54,4 @@ As an independent researcher, the visibility and impact of this work largely dep
 ## ✍️ Citation
 BibTeX Snippet
 ```bibtex
-@article{PeinadorSala2025,
-  author    = {Jos\'{e} Ignacio Peinador Sala},
-  title     = {Optimal Neural Network Repair: Achieving Theoretical Limits in Fragment Recovery via Component Fusion},
-  journal   = {arXiv preprint arXiv:XXXX.XXXXX},
-  year      = {2025}
-}
+Peinador Sala. (2025). Optimal Neural Network Repair: A Principled Approach to Achieving the Theoretical Limits of Structural Restoration. Zenodo. https://doi.org/10.5281/zenodo.17417142
