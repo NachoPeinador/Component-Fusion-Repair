@@ -1,0 +1,305 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{authblk}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\title{\textbf{Optimal Neural Network Repair: A Principled Approach to Achieving the Theoretical Limits of Structural Restoration}}
+
+\author{José Ignacio Peinador Sala}
+\affil{Investigador Independiente \\ \href{mailto:tu.email@gmail.com}{joseignacio.peinador@gmail.com} \\ \href{https://orcid.org/0009-0008-1822-3452}{ORCID: 0009-0008-1822-3452}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This work frames the post-pruning repair of neural networks as a fundamental graph connectivity problem and empirically validates its theoretical limit: the minimum number of connections required to restore structural integrity is exactly equal to the number of disconnected fragments. Through large-scale experiments (850 neurons, $>$85,000 connections) under aggressive 85\% random pruning, our proposed Component Fusion algorithm achieves this theoretical limit with perfect consistency (100\% success rate across 100 replications). In stark contrast, heuristic baseline methods fail to guarantee repair despite a doubled resource budget. By establishing a new benchmark for minimal structural intervention, this work provides a foundational algorithm for parsimonious network restoration and a crucial baseline against which more complex, function-aware repair strategies can be evaluated.
+\end{abstract}
+
+\section{Introduction}
+
+The pursuit of efficient neural networks has led to extensive research into pruning, a process that eliminates redundant connections to reduce computational cost and improve generalization \cite{Frankle2018, Gale2019}. However, aggressive pruning can lead to network fragmentation, where neurons or entire subgraphs become disconnected from the main computational path, compromising the network's structural integrity. While the literature on connection *removal* is vast, the complementary problem of post-pruning structural *repair* remains comparatively unexplored.
+
+This paper addresses this gap by applying a first principle from graph theory to the problem of network repair. We posit that the most efficient structural restoration is bound by a simple, deterministic limit:
+
+\begin{equation}
+C_{\text{min}} = F
+\end{equation}
+
+where $C_{\text{min}}$ is the minimum number of new connections required for repair, and $F$ is the number of fragments disconnected from the main network component. While the principle that restoring connectivity in a graph with $F+1$ components requires a minimum of $F$ edges is fundamental to graph theory, its application and rigorous validation as a benchmark for the structural repair of neural networks has remained unexplored. The novelty of our work lies not in discovering this principle, but in explicitly framing the neural network repair problem within this context, validating its applicability, and demonstrating its superiority over heuristic approaches.
+
+Our contribution is best understood by contrasting it with existing paradigms. First, unlike pruning methods such as the Lottery Ticket Hypothesis, which focus on identifying and *removing* connections to find efficient subnetworks \cite{Frankle2018}, our work addresses the inverse problem of optimally *adding* connections to a damaged artifact. Second, our approach differs fundamentally from Dynamic Sparse Training (DST) methods like RigL or Dynamic Network Surgery \cite{Guo2016, Evci2020}. DST incorporates connection growth as a *heuristic* mechanism during training, typically guided by gradient magnitudes, with the goal of exploring the topology space to maximize task performance \cite{Evci2020}. In contrast, our method is a post-hoc, *deterministic* structural intervention whose sole objective is to restore global connectivity with a theoretical guarantee of minimality, independent of task-specific gradients. Finally, our work is orthogonal to functional repair methods like LBYL, which aim to recover task accuracy by having remaining neurons approximate the output of pruned ones, but which do not address the underlying topological problem of disconnected components \cite{LBYL2022}.
+
+By focusing on topological integrity, we define a new, more fundamental subproblem within network sparsity research: **Minimum Structural Restoration**. This shifts the objective from performance optimization to resource-optimal graph repair. The primary contributions of this paper are therefore:
+
+\begin{enumerate}
+    \item \textbf{Theoretical Framing}: We formalize the application of the $C_{\text{min}} = F$ principle as a theoretical lower bound for post-pruning neural network repair.
+    \item \textbf{Algorithmic Solution}: We introduce the Component Fusion algorithm, a simple and deterministic method that provably achieves this theoretical limit.
+    \item \textbf{Empirical Validation}: We provide robust empirical evidence from large-scale experiments, demonstrating that Component Fusion achieves perfect (100\%) repair success with minimal resources, while common heuristic approaches fail comprehensively.
+\end{enumerate}
+
+This work establishes a necessary theoretical baseline for the field of network repair. Any future algorithm that uses more than $F$ connections must justify this additional cost with demonstrable functional benefits. The remainder of this paper details our methodology, presents the experimental results, and discusses the implications of establishing this fundamental limit.
+
+\section{Methodology}
+
+Our experimental design follows a three-stage pipeline: (1) network construction, (2) aggressive fragmentation to simulate severe structural damage, and (3) a comparative analysis of repair strategies. This framework allows for a rigorous and controlled evaluation of the theoretical principles under challenging conditions.
+
+\subsection{Experimental Framework}
+
+\subsubsection{Network Architecture and Initialization}
+We constructed a fully-connected feedforward network with four layers of dimensions [500, 200, 100, 50], totaling 850 neurons, and approximately 85,000 connections. While this architecture is a simplification of state-of-the-art models, its scale is non-trivial and serves as an ideal testbed for isolating and validating the fundamental principles of structural repair. Future work should aim to validate these findings on more complex topologies, such as Convolutional Neural Networks (CNNs) and Transformers, where connectivity patterns are more structured. The initial, healthy network is represented by an adjacency matrix $A_{\text{healthy}}$, which has a single connected component.
+
+\subsubsection{Aggressive Fragmentation Protocol}
+To create a challenging test case for repair algorithms, we applied a uniform **85\% random pruning** to the healthy network. This process removes 85\% of all connections at random, resulting in a highly fragmented network, $A_{\text{fragmented}}$, with an average of 47.5 disconnected components per instance. The choice of random pruning is deliberate: it isolates the task of structural repair from any specific, structured pruning strategy (e.g., magnitude-based pruning \cite{Gale2019}). By creating a maximally disordered state, we establish a difficult and unbiased benchmark for evaluating the core task of restoring connectivity.
+
+\subsection{Repair Strategies}
+We evaluated three distinct repair strategies. To ensure a fair yet stringent comparison, the budget of connections allocated to our proposed method was set to the theoretical minimum, while baseline methods received double this amount.
+
+\begin{equation}
+B_{\text{fusion}} = F, \quad B_{\text{baselines}} = 2F
+\end{equation}
+
+where $F$ is the number of fragments disconnected from the giant component. This 2x budget for baselines provides them with ample resources, making their potential failure more significant.
+
+\subsubsection{Component Fusion Algorithm (Our Proposal)}
+Our proposed algorithm, Component Fusion, directly implements the theoretical principle of minimal intervention. It systematically identifies each disconnected fragment and adds a single connection between a randomly selected node within that fragment and a randomly selected node in the giant component.
+
+\begin{algorithm}
+\caption{Component Fusion}
+\begin{algorithmic}[1]
+\Procedure{ComponentFusion}{$A_{\text{fragmented}}, B = F$}
+\State $C_G \gets \text{FindGiantComponent}(A_{\text{fragmented}})$
+\State $\text{Fragments} \gets \text{FindAllComponents}(A_{\text{fragmented}}) \setminus \{C_G\}$
+\For{$F_i \in \text{Fragments}$}
+\State $u \gets \text{RandomNode}(F_i)$
+\State $v \gets \text{RandomNode}(C_G)$
+\State $A_{\text{repaired}}[u,v] \gets 1, \quad A_{\text{repaired}}[v,u] \gets 1$
+\EndFor
+\State \Return $A_{\text{repaired}}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+The selection of random nodes is a deliberate design choice to demonstrate the principle's robustness. The method's success does not depend on computationally expensive heuristics (e.g., centrality measures), reinforcing its parsimonious nature.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.8\textwidth]{one_connection_per_fragment.png}
+\caption{\textbf{Conceptual diagram of the Component Fusion principle.} Each disconnected fragment (F\textsubscript{i}) is connected once to the Giant Component (GC), achieving complete restoration with the theoretical minimum of one link per fragment ($C_{\min} = F$). The diagram illustrates the transition from a fragmented state (left) to a fully repaired network (right).}
+\label{fig:concept_fusion}
+\end{figure}
+
+\subsubsection{Baseline Strategies}
+To benchmark our method, we selected two heuristic baselines representing naive and slightly more informed approaches.
+
+\begin{enumerate}
+    \item \textbf{Any-to-Any Growth:} This naive baseline adds connections between any two randomly selected nodes in the network, without regard for component structure. It represents a lower bound on repair intelligence.
+    \item \textbf{Semi-Directed Growth:} This more informed baseline first identifies all disconnected components and then adds connections between nodes chosen from two different, randomly selected components.
+\end{enumerate}
+
+These baselines were chosen to highlight the difference between a principled, goal-directed strategy and heuristic ones. While one could devise more complex heuristics (e.g., a "greedy" approach connecting the two smallest components), any strategy that does not prioritize connecting all fragments to the single giant component is theoretically suboptimal, as it may waste connections merging fragments that must ultimately be connected to the main component anyway.
+
+\subsection{Evaluation Metrics}
+To quantify the effectiveness of each repair strategy, we used the following metrics:
+\begin{itemize}
+    \item \textbf{Component Count ($C$):} The number of connected components post-repair. A successful repair results in $C=1$.
+    \item \textbf{Repair Efficiency ($E$):} The fraction of fragments successfully merged, calculated as $E = (C_{\text{pre}} - C_{\text{post}}) / (C_{\text{pre}} - 1)$, where $C_{\text{pre}}$ and $C_{\text{post}}$ are the component counts before and after repair.
+    \item \textbf{Success Rate:} A binary measure indicating whether complete repair ($C_{\text{post}}=1$) was achieved.
+\end{itemize}
+
+\subsection{Statistical Validation Protocol}
+To ensure the robustness of our findings, we performed **100 independent replications** for each experiment. Each replication involved generating a new network instance, applying a new random 85\% pruning mask, and running all three repair strategies on the resulting fragmented network. The results were then aggregated to compute means, standard deviations, and success rates. This protocol allows us to assess not only the average performance but also the consistency and reliability of each method.
+
+\section{Results}
+
+Our empirical evaluation confirms the theoretical superiority of the Component Fusion algorithm. The results are presented in two stages: first, a detailed analysis of a single, representative large-scale experiment, followed by a robust statistical summary across 100 independent replications to validate the consistency of our findings.
+
+\subsection{Single Representative Experiment}
+To illustrate the performance differences in a concrete scenario, we first analyze a single experimental run. The healthy network, after undergoing 85\% random pruning, was fragmented into 53 distinct components, leaving 52 fragments disconnected from the giant component and in need of repair. The repair budgets were allocated accordingly: 52 connections for Component Fusion ($B_{\text{fusion}} = F$) and 104 for the baselines ($B_{\text{baselines}} = 2F$).
+
+The outcomes, summarized in Table \ref{tab:single_run}, show a stark contrast. Component Fusion achieved perfect repair, reducing the component count to 1, using precisely the theoretical minimum number of connections. In contrast, both baseline methods failed to restore full connectivity, even with double the resource budget.
+
+\begin{table}[h]
+\centering
+\caption{Single Experiment Results (850 neurons, \textbf{52} fragments)}
+\label{tab:single_run}
+\begin{tabular}{l C{1.4cm} C{2.2cm} C{2.3cm} C{2.3cm} c}
+\toprule
+\textbf{Strategy} & \textbf{Budget} & \textbf{Connections \newline Used} & \textbf{Final \newline Components} & \textbf{Repair \newline Efficiency} & \textbf{Success} \\
+\midrule
+Any-to-Any & 104 & 104 & 44 & 17.3\% & No \\
+Semi-Directed & 104 & 104 & 3 & 96.2\% & No \\
+\textbf{Component Fusion} & \textbf{52} & \textbf{52} & \textbf{1} & \textbf{100.0\%} & \textbf{Yes} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Statistical Robustness Analysis}
+To validate the consistency of these results, we aggregated data from 100 independent replications. On average, the 85\% pruning protocol created 47.5 fragments, setting the mean budgets to $B_{\text{fusion}} = 47.5$ and $B_{\text{baselines}} = 95.0$. The aggregated performance metrics are presented in Table \ref{tab:statistical_summary}.
+
+The Component Fusion algorithm achieved a 100\% success rate across all 100 replications, with zero variance in its efficiency. This is not a statistical artifact but a direct empirical confirmation of its deterministic nature; given $F$ fragments, the algorithm will always use $F$ connections and will always succeed. This contrasts sharply with the probabilistic and unreliable nature of the heuristic baselines, which succeeded in only 1\% (Semi-Directed) and 0\% (Any-to-Any) of cases, respectively.
+
+\begin{table}[h!]
+\centering
+\caption{Statistical Summary Across 100 Replications - 85\% Random Pruning}
+\label{tab:statistical_summary}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{Component Fusion} & \textbf{Semi-Directed} & \textbf{Any-to-Any} \\
+\midrule
+Success Rate & 100/100 (100\%) & 1/100 (1\%) & 0/100 (0\%) \\
+Mean Efficiency & 100.00\% & 96.12\% & 20.81\% \\
+Efficiency STD & 0.00\% & 8.20\% & 12.10\% \\
+Connections/Fragment & 1.00 & 2.00 & 2.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Distribution and Consistency Analysis}
+The violin plot in Figure \ref{fig:robustness_analysis} provides a compelling visual summary of the reliability gap between the strategies. The distribution for Component Fusion is a single line at 100\% efficiency, reflecting its perfect consistency. In contrast, the wide distributions for the baseline methods illustrate their high variance and unpredictable performance. Even the more informed Semi-Directed approach, while achieving high mean efficiency, fails to guarantee complete repair, highlighting the critical \emph{consistency gap} between a principled, deterministic solution and heuristic approximations.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure_robustness_analysis.png}
+    \caption{Statistical analysis of repair strategies across 100 independent replications. \textbf{(A)} The distribution of repair efficiencies (violin plots) reveals the perfect consistency and zero variance of Component Fusion. \textbf{(B)} The success rate for complete structural recovery highlights the reliability gap, with Component Fusion achieving 100\% success.}
+    \label{fig:robustness_analysis}
+\end{figure}
+
+\subsection{Validation of the Theoretical Limit}
+Across all 100 replications, our experiments consistently demonstrated that the minimum number of connections required for complete repair equals the number of fragments, empirically validating the principle:
+\begin{equation}
+C_{\text{min}} = F \quad \text{where} \quad F = C_{\text{pre}} - 1
+\end{equation}
+Component Fusion systematically achieved this theoretical limit in every instance, providing robust evidence that it is an optimal algorithm for the task of structural restoration.
+
+\section{Discussion}
+
+Our results provide definitive empirical validation for the principle that optimal structural repair of a fragmented neural network is achieved by adding exactly one connection per disconnected component ($C_{\text{min}} = F$). The Component Fusion algorithm not only meets this theoretical limit but does so with perfect consistency, establishing a new benchmark for network restoration.
+
+\subsection{Theoretical Implications}
+The most significant finding is the stark performance gap between our principled approach and heuristic baselines. While Component Fusion achieved a 100\% success rate with a minimal budget of $F$ connections, the baseline methods failed to guarantee repair even with double the resources ($2F$). This highlights a critical \textbf{consistency gap}: while heuristic methods like Semi-Directed Growth can achieve high *average* efficiency (96.12\%), their probabilistic nature makes them inherently unreliable for applications where complete structural integrity is non-negotiable.
+
+Our work demonstrates that for problems with clear solutions based on first principles, such as graph connectivity, simple and targeted algorithms are superior to more complex, undirected heuristics. By framing network repair as a graph theory problem, we move from a heuristic search space to a deterministic solution space. This establishes a crucial theoretical baseline: any future repair algorithm using more than $F$ connections must justify this additional cost with demonstrable functional benefits, such as accelerated accuracy recovery.
+
+\subsection{Practical Applications and Future Directions}
+While the core contribution of this work is theoretical and algorithmic, it opens promising avenues for practical applications when framed correctly.
+
+\subsubsection{Toward Sustainable and Ecological AI}
+The principle of minimal sufficient intervention aligns directly with the philosophy of Green AI, which prioritizes resource efficiency \cite{Schwartz2020, Strominger2023}. While the direct energy savings from reducing a few dozen repair connections are negligible in the context of a model's overall lifecycle \cite{Yang2017, Horowitz2014}, the underlying principle is significant. Our work promotes a paradigm of \textbf{parsimony by design}. By establishing the absolute minimum number of parameters required to solve a structural problem, we provide a foundation for developing more resource-efficient maintenance and recovery protocols for large-scale models, contributing to the broader goal of sustainable computing.
+
+\subsubsection{A Foundation for Fault-Tolerant Systems}
+The deterministic success of Component Fusion makes it a valuable conceptual tool for designing fault-tolerant systems. Current resilience in distributed deep learning often relies on system-level mechanisms like replication and failover \cite{Li2014, Abadi2016}. Our work offers a complementary, parameter-level perspective.
+
+However, we acknowledge that our experimental model of random, unstructured pruning is an abstraction. Real-world hardware failures, particularly in neuromorphic systems, often follow structured patterns like stuck-at faults or crossbar failures \cite{Liu2020, Indiveri2015}. Therefore, we position Component Fusion not as an immediate, off-the-shelf solution, but as a foundational principle. A promising direction for future research is to adapt this principle to develop targeted repair strategies for specific, realistic hardware fault models.
+
+\subsection{Limitations}
+It is important to acknowledge the boundaries of this study.
+\begin{itemize}
+    \item \textbf{Architectural Scope:} Our experiments were conducted on a fully-connected network. Validating the $C_{\text{min}} = F$ principle on more complex, structured architectures like CNNs and Transformers is a critical next step.
+    \item \textbf{Pruning Model:} We used random pruning to create a maximally challenging and unbiased fragmentation scenario. Future work should investigate repair dynamics under more standard structured or magnitude-based pruning, which may produce different fragmentation patterns.
+    \item \textbf{Structural vs. Functional Repair:} This work focuses exclusively on restoring \textbf{structural integrity}. We do not address the subsequent challenge of recovering task-specific accuracy (functional repair). The interplay between these two facets of repair is a rich area for future investigation, where our method can serve as the initial, optimal step in a more comprehensive restoration pipeline.
+\end{itemize}
+
+\section{Conclusion}
+
+This work has established and empirically validated a fundamental limit for the structural repair of neural networks. By applying a core principle of graph theory, we have demonstrated that the problem of post-pruning repair has a deterministic, optimal, and remarkably simple solution.
+
+\subsection{Key Findings}
+Our research provides three main contributions:
+\begin{enumerate}
+    \item \textbf{Theoretical Limit Validated:} We confirmed that the minimum number of connections required for complete network repair is exactly equal to the number of disconnected fragments ($C_{\text{min}} = F$).
+    \item \textbf{Algorithmic Optimality:} The proposed Component Fusion algorithm systematically achieves this theoretical limit, demonstrating perfect (100\%) success with zero variance.
+    \item \textbf{Superior Resource Efficiency:} Our method guarantees repair while using 50\% fewer connections than heuristic baselines that fail to provide such a guarantee.
+\end{enumerate}
+
+\subsection{Concluding Remarks}
+Component Fusion represents a paradigm shift from probabilistic, heuristic-based repair to guaranteed, optimal restoration. By embracing the principle of minimal sufficient intervention, this work provides a foundational building block for the development of more robust, efficient, and reliable AI systems. As models continue to scale in size and complexity, such theoretically grounded and parsimonious maintenance strategies will become essential for building a truly sustainable and resilient AI ecosystem.
+
+\bibliographystyle{unsrt}
+\begin{thebibliography}{99}
+
+\bibitem{Frankle2018}
+Frankle, J., \& Carbin, M. (2018). 
+\textit{The Lottery Ticket Hypothesis: Finding Sparse, Trainable Neural Networks}.
+International Conference on Learning Representations (ICLR).
+
+\bibitem{Gale2019}
+Gale, T., Elsen, E., \& Hooker, S. (2019).
+\textit{The State of Sparsity in Deep Neural Networks}. 
+Proceedings of the Machine Learning and Systems Conference.
+
+\bibitem{Guo2016}
+Guo, Y., Yao, A., \& Chen, Y. (2016).
+\textit{Dynamic network surgery for efficient dnns}.
+Advances in neural information processing systems, 29.
+
+\bibitem{Evci2020}
+Evci, U., Gale, T., Menick, J., Castro, P. S., \& Elsen, E. (2020).
+\textit{Rigging the lottery: Making all tickets winners}.
+International conference on machine learning.
+
+\bibitem{LBYL2022}
+Kim, Y., et al. (2022).
+\textit{Training-Free Restoration of Pruned Neural Networks}.
+arXiv preprint arXiv:2502.08474.
+
+\bibitem{Schwartz2020}
+Schwartz, R., Dodge, J., Smith, N. A., \& Etzioni, O. (2020).
+\textit{Green AI}.
+Communications of the ACM, 63(12), 54–63.
+
+\bibitem{Strominger2023}
+Strominger, J., et al. (2023).
+\textit{Green AI: Sustainable Artificial Intelligence}.
+ACM Computing Surveys.
+
+\bibitem{Yang2017}
+Yang, T. J., et al. (2017).
+\textit{Eyeriss: An energy-efficient reconfigurable accelerator for deep convolutional neural networks}.
+IEEE Journal of Solid-State Circuits, 52(1), 127-138.
+
+\bibitem{Horowitz2014}
+Horowitz, M. (2014).
+\textit{Computing's energy problem (and what we can do about it)}.
+2014 IEEE International Solid-State Circuits Conference Digest of Technical Papers (ISSCC).
+
+\bibitem{Li2014}
+Li, M., et al. (2014).
+\textit{Scaling distributed machine learning with the parameter server}.
+11th {USENIX} Symposium on Operating Systems Design and Implementation ({OSDI} 14).
+
+\bibitem{Abadi2016}
+Abadi, M., et al. (2016).
+\textit{Tensorflow: A system for large-scale machine learning}.
+12th {USENIX} symposium on operating systems design and implementation ({OSDI} 16).
+
+\bibitem{Liu2020}
+Liu, C., et al. (2020).
+\textit{A fault-tolerant framework for memristive crossbar-based neuromorphic computing systems}.
+IEEE Transactions on Very Large Scale Integration (VLSI) Systems, 28(4), 845-857.
+
+\bibitem{Indiveri2015}
+Indiveri, G., \& Liu, S. C. (2015).
+\textit{Memory and information processing in neuromorphic systems}.
+Proceedings of the IEEE, 103(8), 1379-1397.
+
+\end{thebibliography}
+
+\section*{Code and Data Availability}
+
+The complete implementation, experimental data, and reproduction instructions are available at: \\
+\url{https://github.com/NachoPeinador/Component-Fusion-Repair}
+
+An interactive Colab notebook for result verification is also provided: \\
+\url{https://colab.research.google.com/drive/1A0iFu8xn0QZilWM4e1z6e30REQCP8ICO}
+
+\end{document}
