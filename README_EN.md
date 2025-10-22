@@ -21,6 +21,7 @@ This repository is designed for open science and full reproducibility. You can r
 
 **Complete Validation Pipeline**
 Run the large-scale experiment and the 100-replica robustness test to validate the paper's findings.
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1A0iFu8xn0QZilWM4e1z6e30REQCP8ICO#scrollTo=sBrGZl2PVS5d)
 
 ## 📂 Repository Structure
 * `Component_Fusion_Experiment.ipynb`: The interactive Colab notebook with all experiments.
