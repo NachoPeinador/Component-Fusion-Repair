@@ -1,0 +1,2 @@
+timestamp,network_neurons,initial_connections,pruning_rate,fragments_created,therapy_budget,any_to_any_success,semi_directed_success,fusion_success,any_to_any_efficiency,semi_directed_efficiency,fusion_efficiency
+2025-10-22 10:47:41,850,85592,0.85,52,104,False,False,True,0.17307692307692307,0.9615384615384616,1.0
