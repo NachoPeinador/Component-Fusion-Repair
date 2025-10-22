@@ -13,7 +13,7 @@
 \title{\textbf{Optimal Neural Network Repair: A Principled Approach to Achieving the Theoretical Limits of Structural Restoration}}
 
 \author{José Ignacio Peinador Sala}
-\affil{Investigador Independiente \\ \href{mailto:tu.email@gmail.com}{joseignacio.peinador@gmail.com} \\ \href{https://orcid.org/0009-0008-1822-3452}{ORCID: 0009-0008-1822-3452}}
+\affil{Independent Researcher \\ \href{mailto:tu.email@gmail.com}{joseignacio.peinador@gmail.com} \\ \href{https://orcid.org/0009-0008-1822-3452}{ORCID: 0009-0008-1822-3452}}
 
 \date{\today}
 
