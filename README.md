@@ -10,7 +10,7 @@
 
 This repository contains the code, data, and experiments for the research paper "Optimal Neural Network Repair: Achieving Theoretical Limits in Fragment Recovery via Component Fusion".
 
-The project establishes and empirically validates the theoretical limit for neural network repair: the minimum number of connections required to restore structural integrity is exactly equal to the number of fragmented components. Our findings are validated on a large-scale network (850 neurons) under severe damage (85% random pruning) and confirmed with a robust statistical analysis of 100 independent replicas.¹
+The project establishes and empirically validates the theoretical limit for neural network repair: the minimum number of connections required to restore structural integrity is exactly equal to the number of fragmented components. Our findings are validated on a large-scale network (850 neurons) under severe damage (85% random pruning) and confirmed with a robust statistical analysis of 100 independent replicas.
 
 ![Statistical analysis of repair strategies](figures/figure_robustness_analysis.png)
 *Statistical analysis of repair strategies across 100 independent replicas under 85% random pruning, demonstrating the perfect consistency and superiority of Component Fusion.*
