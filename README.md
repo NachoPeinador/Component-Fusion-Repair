@@ -5,7 +5,7 @@
 [![Contacto](https://img.shields.io/badge/Contacto-joseignacio.peinador@gmail.com-007BFF.svg)](mailto:joseignacio.peinador@gmail.com)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![DOI](https://img.shields.io/badge/DOI-????????/rs.3.rs--???????-blue.svg)](https://dx.doi.org/????????/rs.3.rs-???????/v1)
+[![DOI](https://img.shields.io/badge/DOI-10.21203/rs.3.rs--7926139-blue.svg)](https://dx.doi.org/10.21203/rs.3.rs-7926139/v1)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17417142.svg)](https://doi.org/10.5281/zenodo.17417142)
 
 This repository contains the code, data, and experiments for the research paper "Optimal Neural Network Repair: Achieving Theoretical Limits in Fragment Recovery via Component Fusion".
