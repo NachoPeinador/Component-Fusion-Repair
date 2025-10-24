@@ -55,4 +55,6 @@ As an independent researcher, the visibility and impact of this work largely dep
 ## ✍️ Citation
 BibTeX Snippet
 ```bibtex
-Peinador Sala. (2025). Optimal Neural Network Repair: A Principled Approach to Achieving the Theoretical Limits of Structural Restoration. Zenodo. https://doi.org/10.5281/zenodo.17417142
+José Ignacio Peinador Sala. Optimal Neural Network Repair: A Principled Approach to Achieving the Theoretical Limits of Structural Restoration, 23 October 2025, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-7926139/v1]
+```
+
